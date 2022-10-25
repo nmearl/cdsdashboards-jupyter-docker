@@ -11,4 +11,8 @@ USER $NB_UID
 
 RUN pip install git+https://github.com/Carifio24/hubbleds.git@no-data
 
+RUN pip install importlib_metadata --upgrade
+
+RUN sudo apt-get install tk-dev
+
 # Leave user as jovyan to avoid accidental container runs as root
