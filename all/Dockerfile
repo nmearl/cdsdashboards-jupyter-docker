@@ -1,7 +1,20 @@
-ARG BASE_REPO=ideonate/jh-voila-oauth-singleuser
-FROM $BASE_REPO
+ARG BASE_IMAGE=jupyterhub/k8s-hub:0.10.3
+FROM $BASE_IMAGE
 
-USER $NB_UID
+USER root
+
+RUN mkdir /tmp/cdsdashboard_current
+
+ADD . /tmp/cdsdashboard_current/
+
+RUN cd /tmp/cdsdashboard_current \
+        && python3 setup.py sdist \
+        && python3 -m pip install ./`ls dist/cdsdashboards-*.tar.gz` \
+        && cd .. && rm -rf ./cdsdashboard_current
+
+# RUN python3 -m pip install --upgrade kubernetes==11.0.0
+
+USER ${NB_USER}
 
 # RUN pip install streamlit
 
@@ -11,8 +24,6 @@ USER $NB_UID
 
 RUN pip install git+https://github.com/Carifio24/hubbleds.git@no-data
 
-RUN pip install importlib_metadata --upgrade
-
-RUN sudo apt-get install tk-dev
+# RUN pip install importlib_metadata --upgrade
 
 # Leave user as jovyan to avoid accidental container runs as root
